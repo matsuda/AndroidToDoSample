@@ -1,9 +1,13 @@
 package com.example.matsuda.testtodo.model;
 
+import java.io.Serializable;
+
 /**
  * Created by matsuda on 15/07/15.
  */
-public class Task {
+public class Task implements Serializable {
+
+    private static final long serialVersionUID = 3697733285410948107L;
 
     enum Priority {
         High, Normal, Row

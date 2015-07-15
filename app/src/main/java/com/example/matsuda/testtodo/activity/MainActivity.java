@@ -1,9 +1,12 @@
 package com.example.matsuda.testtodo.activity;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.matsuda.testtodo.R;
@@ -13,16 +16,18 @@ import com.example.matsuda.testtodo.model.Task;
 import java.util.ArrayList;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
+    public static final String TAG = MainActivity.class.getSimpleName();
     private static final ArrayList<Task> tasks = new ArrayList<Task>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("Task list");
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             Task task = new Task();
             task.name = "task" + i;
             task.date = "2015/01/23 18:25";
@@ -32,6 +37,7 @@ public class MainActivity extends Activity {
 
         ListView listView = (ListView)findViewById(R.id.list);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
     }
 
     @Override
@@ -54,5 +60,18 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        ListView listView = (ListView)parent;
+        Task task = (Task)listView.getItemAtPosition(position);
+        presentDetailActivity(task);
+    }
+
+    private void presentDetailActivity(Task task) {
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra("task", task);
+        startActivity(intent);
     }
 }
