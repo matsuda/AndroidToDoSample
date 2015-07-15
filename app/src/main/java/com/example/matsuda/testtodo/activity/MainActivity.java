@@ -1,4 +1,4 @@
-package com.example.matsuda.testtodo;
+package com.example.matsuda.testtodo.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
+import com.example.matsuda.testtodo.R;
 import com.example.matsuda.testtodo.adapter.TaskAdapter;
 import com.example.matsuda.testtodo.model.Task;
 
