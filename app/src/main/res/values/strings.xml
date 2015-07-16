@@ -4,4 +4,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_detail">DetailActivity</string>
+
+    <string name="task_priority_low">低</string>
+    <string name="task_priority_normal">中</string>
+    <string name="task_priority_high">高</string>
 </resources>

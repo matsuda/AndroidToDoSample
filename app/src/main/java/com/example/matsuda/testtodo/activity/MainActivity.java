@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
-    private static final ArrayList<Task> tasks = new ArrayList<Task>();
+    private ArrayList<Task> tasks = new ArrayList<Task>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,12 +27,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
         setTitle("Task list");
 
-        for (int i = 0; i < 20; i++) {
-            Task task = new Task();
-            task.name = "task" + i;
-            task.date = "2015/01/23 18:25";
-            tasks.add(task);
-        }
+        this.tasks = Task.mockTasks(20);
         TaskListAdapter adapter = new TaskListAdapter(this, 0, tasks);
 
         ListView listView = (ListView)findViewById(R.id.list);
