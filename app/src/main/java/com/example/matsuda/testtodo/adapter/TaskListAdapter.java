@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by matsuda on 15/07/15.
  */
-public class TaskAdapter extends ArrayAdapter<Task> {
+public class TaskListAdapter extends ArrayAdapter<Task> {
 
     static class ViewHolder {
         TextView nameView;
@@ -25,7 +25,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
     private LayoutInflater layoutInflater;
     private ViewHolder viewHolder;
 
-    public TaskAdapter(Context context, int resource, List<Task> objects) {
+    public TaskListAdapter(Context context, int resource, List<Task> objects) {
         super(context, resource, objects);
         layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }

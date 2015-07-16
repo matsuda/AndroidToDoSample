@@ -10,7 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.matsuda.testtodo.R;
-import com.example.matsuda.testtodo.adapter.TaskAdapter;
+import com.example.matsuda.testtodo.adapter.TaskListAdapter;
 import com.example.matsuda.testtodo.model.Task;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             task.date = "2015/01/23 18:25";
             tasks.add(task);
         }
-        TaskAdapter adapter = new TaskAdapter(this, 0, tasks);
+        TaskListAdapter adapter = new TaskListAdapter(this, 0, tasks);
 
         ListView listView = (ListView)findViewById(R.id.list);
         listView.setAdapter(adapter);
