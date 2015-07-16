@@ -11,10 +11,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="left" />
-    <TextView
+    <EditText
         android:id="@+id/value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="right"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:singleLine="true"
+        android:background="#00000000" />
 </LinearLayout>

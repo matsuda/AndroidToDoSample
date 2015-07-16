@@ -9,25 +9,31 @@ import android.view.MenuItem;
 import android.widget.ListView;
 
 import com.example.matsuda.testtodo.R;
-import com.example.matsuda.testtodo.adapter.TaskDetailAdapter;
+import com.example.matsuda.testtodo.adapter.TaskEditAdapter;
 import com.example.matsuda.testtodo.model.Task;
 
-public class DetailActivity extends AppCompatActivity {
+public class EditActivity extends AppCompatActivity {
     public static final String TAG = DetailActivity.class.getSimpleName();
     public Task task;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        setContentView(R.layout.activity_edit);
+
         Intent intent = getIntent();
         this.task = (Task)intent.getSerializableExtra("task");
-        setTitle(this.task.name);
+        String name = this.task.name;
+        if (name == null || name.isEmpty()) {
+            setTitle("ToDoの新規作成");
+        } else  {
+            setTitle(this.task.name + "の編集");
+        }
         // DEBUG
         Bundle args = intent.getExtras();
         Log.d(TAG, args.toString());
 
-        TaskDetailAdapter adapter = new TaskDetailAdapter(this, this.task);
+        TaskEditAdapter adapter = new TaskEditAdapter(this, this.task);
         ListView listView = (ListView)findViewById(R.id.list);
         listView.setAdapter(adapter);
     }
@@ -35,7 +41,7 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        getMenuInflater().inflate(R.menu.menu_edit, menu);
         return true;
     }
 
@@ -45,13 +51,6 @@ public class DetailActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        if (id == R.id.action_edit) {
-            Intent intent = new Intent(this, EditActivity.class);
-            intent.putExtra("task", task);
-            startActivity(intent);
-            return true;
-        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
