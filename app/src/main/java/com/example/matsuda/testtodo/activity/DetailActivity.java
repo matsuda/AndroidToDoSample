@@ -6,8 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 
 import com.example.matsuda.testtodo.R;
+import com.example.matsuda.testtodo.adapter.TaskDetailAdapter;
 import com.example.matsuda.testtodo.model.Task;
 
 public class DetailActivity extends AppCompatActivity {
@@ -24,6 +26,10 @@ public class DetailActivity extends AppCompatActivity {
         // DEBUG
         Bundle args = intent.getExtras();
         Log.d(TAG, args.toString());
+
+        TaskDetailAdapter adapter = new TaskDetailAdapter(this, this.task);
+        ListView listView = (ListView)findViewById(R.id.list);
+        listView.setAdapter(adapter);
     }
 
     @Override
