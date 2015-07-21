@@ -11,6 +11,7 @@ import android.widget.ListView;
 
 import com.example.matsuda.testtodo.R;
 import com.example.matsuda.testtodo.adapter.TaskListAdapter;
+import com.example.matsuda.testtodo.model.DBOpenHelper;
 import com.example.matsuda.testtodo.model.Task;
 
 import java.util.ArrayList;
@@ -28,7 +29,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
         setTitle("Task一覧");
 
-        this.tasks = Task.mockTasks(20);
+        DBOpenHelper helper = new DBOpenHelper(this);
+        // this.tasks = Task.mockTasks(20);
+        this.tasks = Task.findAll(helper, "20");
+
         adapter = new TaskListAdapter(this, 0, tasks);
 
         ListView listView = (ListView)findViewById(R.id.list);
