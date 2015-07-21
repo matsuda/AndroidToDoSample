@@ -1,10 +1,13 @@
 package com.example.matsuda.testtodo.adapter;
 
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.matsuda.testtodo.R;
@@ -13,8 +16,8 @@ import com.example.matsuda.testtodo.model.Task;
 /**
  * Created by matsuda on 15/07/16.
  */
-public class TaskEditAdapter extends BaseAdapter {
-    public static final String TAG = TaskEditAdapter.class.getSimpleName();
+public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeListener, View.OnKeyListener {
+    private static final String TAG = TaskEditAdapter.class.getSimpleName();
     private static final int TYPE_SINGLELINE = 0;
     private static final int TYPE_MULTILINES = 1;
     private static final int TYPE_SELECTION = 2;
@@ -63,57 +66,77 @@ public class TaskEditAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        switch (getItemViewType(position)) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        int type = getItemViewType(position);
+        switch (type) {
             case TYPE_SELECTION:
-                if (convertView == null) {
-                    convertView = inflater.inflate(R.layout.value_default_list, parent, false);
-                    holder = new ViewHolder();
-                    holder.captionView = (TextView)convertView.findViewById(R.id.caption);
-                    holder.valueView = (TextView)convertView.findViewById(R.id.value);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
+                convertView = getSelectionView(position, convertView, parent);
                 break;
             case TYPE_MULTILINES:
-                if (convertView == null) {
-                    convertView = inflater.inflate(R.layout.edit_multilines_text_list, parent, false);
-                    holder = new ViewHolder();
-                    holder.captionView = (TextView)convertView.findViewById(R.id.caption);
-                    holder.valueView = (TextView)convertView.findViewById(R.id.value);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
+                convertView = getMultiLinesView(position, convertView, parent);
                 break;
             default:
-                if (convertView == null) {
-                    convertView = inflater.inflate(R.layout.edit_text_list, parent, false);
-                    holder = new ViewHolder();
-                    holder.captionView = (TextView)convertView.findViewById(R.id.caption);
-                    holder.valueView = (TextView)convertView.findViewById(R.id.value);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
+                convertView = getSingleLineView(position, convertView, parent);
                 break;
         }
-        TextView captionView = (TextView)convertView.findViewById(R.id.caption);
-        TextView valueView = (TextView)convertView.findViewById(R.id.value);
+        return convertView;
+    }
+
+    private View getSingleLineView(final int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.edit_text_list, parent, false);
+            holder = new ViewHolder();
+            holder.captionView = (TextView) convertView.findViewById(R.id.caption);
+            holder.valueView = (EditText) convertView.findViewById(R.id.value);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        assignValueToViewHolder(position, holder);
+        holder.valueView.setTag(position);
+        holder.valueView.setOnFocusChangeListener(this);
+        // holder.valueView.setOnKeyListener(this);
+        return convertView;
+    }
+
+    private View getMultiLinesView(final int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.edit_multilines_text_list, parent, false);
+            holder = new ViewHolder();
+            holder.captionView = (TextView) convertView.findViewById(R.id.caption);
+            holder.valueView = (EditText) convertView.findViewById(R.id.value);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        assignValueToViewHolder(position, holder);
+        holder.valueView.setTag(position);
+        holder.valueView.setOnFocusChangeListener(this);
+        return convertView;
+    }
+
+    private View getSelectionView(final int position, View convertView, ViewGroup parent) {
+        ViewHolderSelection holder;
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.value_default_list, parent, false);
+            holder = new ViewHolderSelection();
+            holder.captionView = (TextView) convertView.findViewById(R.id.caption);
+            holder.valueView = (TextView) convertView.findViewById(R.id.value);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolderSelection) convertView.getTag();
+        }
+        assignValueToSelectionViewHolder(position, holder);
+        return convertView;
+    }
+
+    private void assignValueToViewHolder(final int position, ViewHolder holder) {
         switch (position) {
             case 0:
                 holder.captionView.setText(context.getString(R.string.task_name) + " : ");
                 holder.valueView.setText(task.name);
-                break;
-            case 1:
-                holder.captionView.setText(context.getString(R.string.task_priority) + " : ");
-                holder.valueView.setText(task.priority.toString());
-                break;
-            case 2:
-                holder.captionView.setText(context.getString(R.string.task_date) + " : ");
-                holder.valueView.setText(task.date);
                 break;
             case 3:
                 holder.captionView.setText(context.getString(R.string.task_memo) + " : ");
@@ -122,10 +145,62 @@ public class TaskEditAdapter extends BaseAdapter {
             default:
                 break;
         }
-        return convertView;
+    }
+
+    private void assignValueToSelectionViewHolder(final int position, ViewHolderSelection holder) {
+        switch (position) {
+            case 1:
+                holder.captionView.setText(context.getString(R.string.task_priority) + " : ");
+                holder.valueView.setText(task.priority.toString());
+                break;
+            case 2:
+                holder.captionView.setText(context.getString(R.string.task_date) + " : ");
+                holder.valueView.setText(task.date);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (!hasFocus) {
+            if (v.getTag() == null) return;
+            int position = (int)v.getTag();
+            EditText textView = (EditText)v;
+            String value = textView.getText().toString();
+            switch (position) {
+                case 0:
+                    task.name = value;
+                    break;
+                case 1:
+                    // task.priority = value;
+                    break;
+                case 2:
+                    // task.date = value;
+                    break;
+                case 3:
+                    task.memo = value;
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+        if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+            InputMethodManager inputMethodManager = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+        return false;
     }
 
     private static class ViewHolder {
+        TextView captionView;
+        EditText valueView;
+    }
+    private static class ViewHolderSelection {
         TextView captionView;
         TextView valueView;
     }

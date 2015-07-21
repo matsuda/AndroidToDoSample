@@ -18,17 +18,18 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
-    public static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = MainActivity.class.getSimpleName();
     private ArrayList<Task> tasks = new ArrayList<Task>();
+    private TaskListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setTitle("Task list");
+        setTitle("Task一覧");
 
         this.tasks = Task.mockTasks(20);
-        TaskListAdapter adapter = new TaskListAdapter(this, 0, tasks);
+        adapter = new TaskListAdapter(this, 0, tasks);
 
         ListView listView = (ListView)findViewById(R.id.list);
         listView.setAdapter(adapter);
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if (id == R.id.action_add) {
             Intent intent = new Intent(this, EditActivity.class);
             intent.putExtra("task", new Task());
-            startActivity(intent);
+            startActivityForResult(intent, EditActivity.REQUEST_CODE_CREATE);
             return true;
         }
 
@@ -75,5 +76,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra("task", task);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case EditActivity.REQUEST_CODE_CREATE:
+                if (resultCode == RESULT_OK) {
+                    Task task = (Task)data.getSerializableExtra("task");
+                    if (task != null) {
+                        this.tasks.add(task);
+                        this.adapter.notifyDataSetChanged();
+                    }
+                }
+                break;
+        }
     }
 }

@@ -3,9 +3,10 @@ package com.example.matsuda.testtodo.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.matsuda.testtodo.R;
@@ -13,7 +14,11 @@ import com.example.matsuda.testtodo.adapter.TaskEditAdapter;
 import com.example.matsuda.testtodo.model.Task;
 
 public class EditActivity extends AppCompatActivity {
-    public static final String TAG = DetailActivity.class.getSimpleName();
+    private static final String TAG = EditActivity.class.getSimpleName();
+
+    public static final int REQUEST_CODE_CREATE = 1;
+    public static final int REQUEST_CODE_UPDATE = 2;
+
     public Task task;
 
     @Override
@@ -29,13 +34,28 @@ public class EditActivity extends AppCompatActivity {
         } else  {
             setTitle(this.task.name + "の編集");
         }
-        // DEBUG
-        Bundle args = intent.getExtras();
-        Log.d(TAG, args.toString());
 
         TaskEditAdapter adapter = new TaskEditAdapter(this, this.task);
         ListView listView = (ListView)findViewById(R.id.list);
         listView.setAdapter(adapter);
+
+        Button cancelButton = (Button)findViewById(R.id.cancel);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        Button saveButton = (Button)findViewById(R.id.save);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.putExtra("task", EditActivity.this.task);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
     }
 
     @Override

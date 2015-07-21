@@ -14,7 +14,7 @@ import com.example.matsuda.testtodo.model.Task;
  * Created by matsuda on 15/07/16.
  */
 public class TaskDetailAdapter extends BaseAdapter {
-    public static final String TAG = TaskDetailAdapter.class.getSimpleName();
+    private static final String TAG = TaskDetailAdapter.class.getSimpleName();
     private static final int TYPE_DEFAULT = 0;
     private static final int TYPE_MULTILINES = 1;
 
@@ -25,6 +25,14 @@ public class TaskDetailAdapter extends BaseAdapter {
     public TaskDetailAdapter(Context context, Task task) {
         this.context = context;
         this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.task = task;
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
         this.task = task;
     }
 
@@ -85,8 +93,6 @@ public class TaskDetailAdapter extends BaseAdapter {
                 }
                 break;
         }
-        TextView captionView = (TextView)convertView.findViewById(R.id.caption);
-        TextView valueView = (TextView)convertView.findViewById(R.id.value);
         switch (position) {
             case 0:
                 holder.captionView.setText(context.getString(R.string.task_name));
