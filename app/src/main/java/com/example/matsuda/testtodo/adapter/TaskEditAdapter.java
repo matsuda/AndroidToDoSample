@@ -26,6 +26,19 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
     private LayoutInflater inflater;
     private Task task;
 
+    /**
+     * delegate
+     */
+    public interface ViewSelectionListener {
+        void onViewSelected(int position);
+    }
+
+    private ViewSelectionListener selectionListener;
+
+    public void setViewSelectionListener(ViewSelectionListener listener) {
+        selectionListener = listener;
+    }
+
     public TaskEditAdapter(Context context, Task task) {
         this.context = context;
         this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -129,6 +142,14 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
             holder = (ViewHolderSelection) convertView.getTag();
         }
         assignValueToSelectionViewHolder(position, holder);
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectionListener != null) {
+                    selectionListener.onViewSelected(position);
+                }
+            }
+        });
         return convertView;
     }
 

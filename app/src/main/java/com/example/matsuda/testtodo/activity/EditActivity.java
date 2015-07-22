@@ -1,11 +1,14 @@
 package com.example.matsuda.testtodo.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -14,12 +17,13 @@ import com.example.matsuda.testtodo.R;
 import com.example.matsuda.testtodo.adapter.TaskEditAdapter;
 import com.example.matsuda.testtodo.model.Task;
 
-public class EditActivity extends AppCompatActivity {
+public class EditActivity extends AppCompatActivity implements TaskEditAdapter.ViewSelectionListener {
     private static final String TAG = EditActivity.class.getSimpleName();
 
     public static final int REQUEST_CODE_CREATE = 1;
     public static final int REQUEST_CODE_UPDATE = 2;
 
+    private TaskEditAdapter adapter;
     protected Task task;
 
     @Override
@@ -31,7 +35,8 @@ public class EditActivity extends AppCompatActivity {
         this.task = (Task)intent.getSerializableExtra("task");
         setTitle();
 
-        TaskEditAdapter adapter = new TaskEditAdapter(this, this.task);
+        adapter = new TaskEditAdapter(this, this.task);
+        adapter.setViewSelectionListener(this);
         ListView listView = (ListView)findViewById(R.id.list);
         listView.setAdapter(adapter);
 
@@ -62,6 +67,39 @@ public class EditActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "did fall to save task.", Toast.LENGTH_SHORT);
         }
+    }
+
+    @Override
+    public void onViewSelected(int position) {
+        switch (position) {
+            case 1:
+                presentPriorityDialog();
+                break;
+            case 2:
+                break;
+        }
+    }
+
+    private void presentPriorityDialog() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice);
+        adapter.add(Task.Priority.High.toString());
+        adapter.add(Task.Priority.Normal.toString());
+        adapter.add(Task.Priority.Low.toString());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("選択してください");
+        int idx = 2 - this.task.priority.ordinal();
+        builder.setSingleChoiceItems(adapter, idx, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Task.Priority priority = Task.Priority.getEnum(2 - which);
+                EditActivity.this.task.priority = priority;
+                EditActivity.this.adapter.notifyDataSetChanged();
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     @Override
