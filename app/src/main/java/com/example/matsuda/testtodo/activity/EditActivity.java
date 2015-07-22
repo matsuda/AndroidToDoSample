@@ -82,17 +82,20 @@ public class EditActivity extends AppCompatActivity implements TaskEditAdapter.V
 
     private void presentPriorityDialog() {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice);
-        adapter.add(Task.Priority.High.toString());
-        adapter.add(Task.Priority.Normal.toString());
-        adapter.add(Task.Priority.Low.toString());
+        Task.Priority[] priorities = Task.Priority.values();
+        int size = priorities.length;
+        for (int i = size - 1, count = 0; i >= count; i++) {
+            adapter.add(priorities[i].toString());
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("選択してください");
-        int idx = 2 - this.task.priority.ordinal();
+        int idx = size - 1 - this.task.priority.toInt();
         builder.setSingleChoiceItems(adapter, idx, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Task.Priority priority = Task.Priority.getEnum(2 - which);
+                int size = Task.Priority.values().length;
+                Task.Priority priority = Task.Priority.getEnum(size - 1 - which);
                 EditActivity.this.task.priority = priority;
                 EditActivity.this.adapter.notifyDataSetChanged();
                 dialog.dismiss();

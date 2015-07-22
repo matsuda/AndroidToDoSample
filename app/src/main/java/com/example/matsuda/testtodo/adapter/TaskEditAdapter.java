@@ -203,7 +203,8 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
                 spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        Task.Priority priority = Task.Priority.getEnum(2 - position);
+                        int size = Task.Priority.values().length;
+                        Task.Priority priority = Task.Priority.getEnum(size - 1 - position);
                         TaskEditAdapter.this.task.priority = priority;
                     }
 

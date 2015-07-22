@@ -27,7 +27,13 @@ public class Task implements Serializable, BaseColumns {
     public static final String COLUMN_NAME_PRIORITY = "priority";
 
     public enum Priority {
-        Low, Normal, High;
+        Low(0), Normal(1), High(2);
+
+        private int value;
+
+        Priority(int value) {
+            this.value = value;
+        }
 
         @Override
         public String toString() {
@@ -40,10 +46,15 @@ public class Task implements Serializable, BaseColumns {
                     return App.getContext().getResources().getString(R.string.task_priority_normal);
             }
         }
+
+        public int toInt() {
+            return this.value;
+        }
+
         public static Priority getEnum(int i) {
             Priority[] values = Priority.values();
             for (Priority p : values) {
-                if (p.ordinal() == i) {
+                if (p.toInt() == i) {
                     return p;
                 }
             }
@@ -192,7 +203,7 @@ public class Task implements Serializable, BaseColumns {
         values.put(COLUMN_NAME_NAME, this.name);
         values.put(COLUMN_NAME_MEMO, this.memo);
         values.put(COLUMN_NAME_DATE, this.date);
-        values.put(COLUMN_NAME_PRIORITY, Integer.valueOf(this.priority.ordinal()));
+        values.put(COLUMN_NAME_PRIORITY, Integer.valueOf(this.priority.toInt()));
         return values;
     }
     /*
