@@ -57,7 +57,7 @@ public class DetailActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_edit) {
-            Intent intent = new Intent(this, EditActivity.class);
+            Intent intent = new Intent(this, UpdateActivity.class);
             intent.putExtra("task", this.task);
             startActivityForResult(intent, EditActivity.REQUEST_CODE_UPDATE);
             return true;

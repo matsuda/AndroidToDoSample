@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.matsuda.testtodo.R;
 import com.example.matsuda.testtodo.adapter.TaskEditAdapter;
@@ -19,7 +20,7 @@ public class EditActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_CREATE = 1;
     public static final int REQUEST_CODE_UPDATE = 2;
 
-    public Task task;
+    protected Task task;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +29,7 @@ public class EditActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         this.task = (Task)intent.getSerializableExtra("task");
-        String name = this.task.name;
-        if (name == null || name.isEmpty()) {
-            setTitle("ToDoの新規作成");
-        } else  {
-            setTitle(this.task.name + "の編集");
-        }
+        setTitle();
 
         TaskEditAdapter adapter = new TaskEditAdapter(this, this.task);
         ListView listView = (ListView)findViewById(R.id.list);
@@ -50,12 +46,22 @@ public class EditActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.putExtra("task", EditActivity.this.task);
-                setResult(RESULT_OK, intent);
-                finish();
+                saveClickListener();
             }
         });
+    }
+
+    protected void setTitle() {}
+
+    protected void saveClickListener() {
+        if (this.task.save(this)) {
+            Intent intent = new Intent();
+            intent.putExtra("task", this.task);
+            setResult(RESULT_OK, intent);
+            finish();
+        } else {
+            Toast.makeText(this, "did fall to save task.", Toast.LENGTH_SHORT);
+        }
     }
 
     @Override

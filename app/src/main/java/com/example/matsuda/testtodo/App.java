@@ -3,7 +3,6 @@ package com.example.matsuda.testtodo;
 import android.app.Application;
 import android.content.Context;
 
-import com.example.matsuda.testtodo.model.DBOpenHelper;
 import com.example.matsuda.testtodo.model.Task;
 
 /**
@@ -18,8 +17,8 @@ public class App extends Application {
         super.onCreate();
         context = this;
 
-        DBOpenHelper helper = new DBOpenHelper(this);
-        Task.prepareTasks(helper, 20);
+        Task.truncateTasks(context);
+        Task.prepareTasks(context, 10);
     }
 
     public static Context getContext() {

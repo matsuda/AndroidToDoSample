@@ -11,7 +11,6 @@ import android.widget.ListView;
 
 import com.example.matsuda.testtodo.R;
 import com.example.matsuda.testtodo.adapter.TaskListAdapter;
-import com.example.matsuda.testtodo.model.DBOpenHelper;
 import com.example.matsuda.testtodo.model.Task;
 
 import java.util.ArrayList;
@@ -29,9 +28,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
         setTitle("Task一覧");
 
-        DBOpenHelper helper = new DBOpenHelper(this);
         // this.tasks = Task.mockTasks(20);
-        this.tasks = Task.findAll(helper, "20");
+        this.tasks = Task.findAll(this, "20");
 
         adapter = new TaskListAdapter(this, 0, tasks);
 
@@ -55,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         int id = item.getItemId();
 
         if (id == R.id.action_add) {
-            Intent intent = new Intent(this, EditActivity.class);
+            Intent intent = new Intent(this, CreateActivity.class);
             intent.putExtra("task", new Task());
             startActivityForResult(intent, EditActivity.REQUEST_CODE_CREATE);
             return true;
@@ -92,6 +90,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     if (task != null) {
                         this.tasks.add(task);
                         this.adapter.notifyDataSetChanged();
+//                        Task nTask = Task.findById(this, task.id);
+//                        if (nTask != null) {
+//                            this.tasks.add(nTask);
+//                            this.adapter.notifyDataSetChanged();
+//                        }
                     }
                 }
                 break;

@@ -2,6 +2,8 @@
     <string name="app_name">TestToDo</string>
     <string name="title_activity_detail">DetailActivity</string>
     <string name="title_activity_edit">EditActivity</string>
+    <string name="title_activity_create">CreateActivity</string>
+    <string name="title_activity_update">UpdateActivity</string>
 
     <string name="action_add">Add</string>
     <string name="action_edit">Edit</string>

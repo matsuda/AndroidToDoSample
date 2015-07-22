@@ -1,6 +1,7 @@
 package com.example.matsuda.testtodo.model;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
@@ -89,7 +90,8 @@ public class Task implements Serializable, BaseColumns {
         this.priority = priority;
     }
 
-    public static void truncateTasks(DBOpenHelper helper) {
+    public static void truncateTasks(Context context) {
+        DBOpenHelper helper = new DBOpenHelper(context);
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
             db.beginTransaction();
@@ -102,24 +104,43 @@ public class Task implements Serializable, BaseColumns {
         }
     }
 
-    public static void prepareTasks(DBOpenHelper helper, int count) {
-        truncateTasks(helper);
+    public static void prepareTasks(Context context, int count) {
+        DBOpenHelper helper = new DBOpenHelper(context);
         SQLiteDatabase db = helper.getWritableDatabase();
         for (int i = 1; i <= count; i++) {
             Task task = mock(i);
-            ContentValues values = new ContentValues();
-            values.put(COLUMN_NAME_NAME, task.name);
-            values.put(COLUMN_NAME_MEMO, task.memo);
-            values.put(COLUMN_NAME_DATE, task.date);
-            values.put(COLUMN_NAME_PRIORITY, Integer.valueOf(task.priority.ordinal()));
+            ContentValues values = task.mapValues();
             db.insert(TABLE_NAME, null, values);
         }
         db.close();
     }
 
-    public static ArrayList<Task> findAll(DBOpenHelper helper, String limit) {
+    public static ArrayList<Task> findAll(Context context, String limit) {
+        DBOpenHelper helper = new DBOpenHelper(context);
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor c = db.query(TABLE_NAME, null, null, null, null, null, null, limit);
+        ArrayList<Task> array = mapObjects(c);
+        c.close();
+        db.close();
+        return array;
+    }
+
+    public static Task findById(Context context, long id) {
+        DBOpenHelper helper = new DBOpenHelper(context);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        String where = _ID + " = ?";
+        String[] whereArgs = { String.valueOf(id) };
+        Cursor c = db.query(TABLE_NAME, null, where, whereArgs, null, null, null);
+        ArrayList<Task> array = mapObjects(c);
+        c.close();
+        db.close();
+        if (array.size() > 0) {
+            return array.get(0);
+        }
+        return null;
+    }
+
+    private static ArrayList<Task> mapObjects(Cursor c) {
         ArrayList<Task> array = new ArrayList<Task>();
         if (c.moveToFirst()) {
             do {
@@ -134,9 +155,45 @@ public class Task implements Serializable, BaseColumns {
                 array.add(task);
             } while (c.moveToNext());
         }
-        c.close();
-        db.close();
         return array;
+    }
+
+    public boolean save(Context context) {
+        if (this.id > 0) {
+            return update(context);
+        } else {
+            return insert(context);
+        }
+    }
+
+    public boolean insert(Context context) {
+        DBOpenHelper helper = new DBOpenHelper(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues values = mapValues();
+        long rowId = db.insert(TABLE_NAME, null, values);
+        this.id = rowId;
+        db.close();
+        return rowId != -1;
+    }
+
+    public boolean update(Context context) {
+        DBOpenHelper helper = new DBOpenHelper(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues values = mapValues();
+        String where = _ID + " = ?";
+        String[] whereArgs = { String.valueOf(this.id) };
+        int count = db.update(TABLE_NAME, values, where, whereArgs);
+        db.close();
+        return count > 0;
+    }
+
+    private ContentValues mapValues() {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME_NAME, this.name);
+        values.put(COLUMN_NAME_MEMO, this.memo);
+        values.put(COLUMN_NAME_DATE, this.date);
+        values.put(COLUMN_NAME_PRIORITY, Integer.valueOf(this.priority.ordinal()));
+        return values;
     }
     /*
     public static ArrayList<Task> mockTasks(int count) {
