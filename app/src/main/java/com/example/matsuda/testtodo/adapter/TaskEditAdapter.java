@@ -6,8 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.matsuda.testtodo.R;
@@ -133,15 +136,24 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
     private View getSelectionView(final int position, View convertView, ViewGroup parent) {
         ViewHolderSelection holder;
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.value_default_list, parent, false);
+            /** delegateの場合 */
+            // convertView = inflater.inflate(R.layout.value_default_list, parent, false);
+            /** spinnerの場合 */
+            convertView = inflater.inflate(R.layout.edit_selection_list, parent, false);
             holder = new ViewHolderSelection();
             holder.captionView = (TextView) convertView.findViewById(R.id.caption);
-            holder.valueView = (TextView) convertView.findViewById(R.id.value);
+            // holder.valueView = (TextView) convertView.findViewById(R.id.value);
+            holder.valueView = (Spinner) convertView.findViewById(R.id.value);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolderSelection) convertView.getTag();
         }
         assignValueToSelectionViewHolder(position, holder);
+        /**
+         * delegateを利用する
+         * Activity側でAlertDialogを利用してドロップボックス表示
+         */
+        /*
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,6 +162,7 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
                 }
             }
         });
+        */
         return convertView;
     }
 
@@ -170,13 +183,41 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
 
     private void assignValueToSelectionViewHolder(final int position, ViewHolderSelection holder) {
         switch (position) {
-            case 1:
+            case 1: {
+                /**
+                 * Spinnerを利用してドロップボックス表示
+                 */
                 holder.captionView.setText(context.getString(R.string.task_priority) + " : ");
-                holder.valueView.setText(task.priority.toString());
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.context, android.R.layout.simple_spinner_item);
+                adapter.add(Task.Priority.High.toString());
+                adapter.add(Task.Priority.Normal.toString());
+                adapter.add(Task.Priority.Low.toString());
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                Spinner spinner = holder.valueView;
+                spinner.setAdapter(adapter);
+                String priorityString = this.task.priority.toString();
+                int idx = adapter.getPosition(priorityString);
+                spinner.setSelection(idx);
+
+                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        Task.Priority priority = Task.Priority.getEnum(2 - position);
+                        TaskEditAdapter.this.task.priority = priority;
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+                /** delegateの場合 */
+                // holder.valueView.setText(task.priority.toString());
                 break;
+            }
             case 2:
                 holder.captionView.setText(context.getString(R.string.task_date) + " : ");
-                holder.valueView.setText(task.date);
+                // holder.valueView.setText(task.date);
                 break;
             default:
                 break;
@@ -223,6 +264,7 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
     }
     private static class ViewHolderSelection {
         TextView captionView;
-        TextView valueView;
+        Spinner valueView;
+        // TextView valueView;
     }
 }
