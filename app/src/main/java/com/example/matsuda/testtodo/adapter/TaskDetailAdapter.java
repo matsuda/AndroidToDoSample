@@ -116,6 +116,22 @@ public class TaskDetailAdapter extends BaseAdapter {
         return convertView;
     }
 
+    /**
+     * 選択させない
+     * http://cheesememo.blog39.fc2.com/blog-entry-699.html
+     */
+//    @Override
+//    public boolean isEnabled(int position) {
+//        return false;
+//    }
+    /**
+     * separatorが消えてしまう
+     */
+//    @Override
+//    public boolean areAllItemsEnabled() {
+//        return false;
+//    }
+
     private static class ViewHolder {
         TextView captionView;
         TextView valueView;
