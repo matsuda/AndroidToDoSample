@@ -24,6 +24,7 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
     private static final int TYPE_SINGLELINE = 0;
     private static final int TYPE_MULTILINES = 1;
     private static final int TYPE_SELECTION = 2;
+    private static final int TYPE_PICKER = 3;
 
     private Context context;
     private LayoutInflater inflater;
@@ -52,8 +53,9 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
     public int getItemViewType(int position) {
         switch (position) {
             case 1:
-            case 2:
                 return TYPE_SELECTION;
+            case 2:
+                return TYPE_PICKER;
             case 3:
                 return TYPE_MULTILINES;
             default:
@@ -63,7 +65,7 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
 
     @Override
     public int getViewTypeCount() {
-        return 3;
+        return 4;
     }
 
     @Override
@@ -87,6 +89,9 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
         switch (type) {
             case TYPE_SELECTION:
                 convertView = getSelectionView(position, convertView, parent);
+                break;
+            case TYPE_PICKER:
+                convertView = getPickerView(position, convertView, parent);
                 break;
             case TYPE_MULTILINES:
                 convertView = getMultiLinesView(position, convertView, parent);
@@ -166,6 +171,33 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
         return convertView;
     }
 
+    private View getPickerView(final int position, View convertView, ViewGroup parent) {
+        ViewHolderPicker holder;
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.value_default_list, parent, false);
+            holder = new ViewHolderPicker();
+            holder.captionView = (TextView) convertView.findViewById(R.id.caption);
+            holder.valueView = (TextView) convertView.findViewById(R.id.value);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolderPicker) convertView.getTag();
+        }
+        assignValueToPickerViewHolder(position, holder);
+        /**
+         * delegateを利用する
+         * Activity側でAlertDialogを利用してピッカー表示
+         */
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectionListener != null) {
+                    selectionListener.onViewSelected(position);
+                }
+            }
+        });
+        return convertView;
+    }
+
     private void assignValueToViewHolder(final int position, ViewHolder holder) {
         switch (position) {
             case 0:
@@ -225,6 +257,17 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
         }
     }
 
+    private void assignValueToPickerViewHolder(final int position, ViewHolderPicker holder) {
+        switch (position) {
+            case 2:
+                holder.captionView.setText(context.getString(R.string.task_date) + " : ");
+                // holder.valueView.setText(task.date);
+                break;
+            default:
+                break;
+        }
+    }
+
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (!hasFocus) {
@@ -267,5 +310,9 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
         TextView captionView;
         Spinner valueView;
         // TextView valueView;
+    }
+    private static class ViewHolderPicker {
+        TextView captionView;
+        TextView valueView;
     }
 }
