@@ -45,7 +45,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
 
         Task task = (Task)getItem(position);
         viewHolder.nameView.setText(task.name);
-        viewHolder.dateView.setText(task.date);
+        viewHolder.dateView.setText(task.getDateString());
 
         return convertView;
     }

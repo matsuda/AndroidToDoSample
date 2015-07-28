@@ -104,7 +104,7 @@ public class TaskDetailAdapter extends BaseAdapter {
                 break;
             case 2:
                 holder.captionView.setText(context.getString(R.string.task_date));
-                holder.valueView.setText(task.date);
+                holder.valueView.setText(task.getDateString());
                 break;
             case 3:
                 holder.captionView.setText(context.getString(R.string.task_memo));

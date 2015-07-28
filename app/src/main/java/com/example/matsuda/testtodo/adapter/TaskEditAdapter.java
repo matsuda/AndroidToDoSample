@@ -261,7 +261,7 @@ public class TaskEditAdapter extends BaseAdapter implements View.OnFocusChangeLi
         switch (position) {
             case 2:
                 holder.captionView.setText(context.getString(R.string.task_date) + " : ");
-                // holder.valueView.setText(task.date);
+                holder.valueView.setText(task.getDateString());
                 break;
             default:
                 break;

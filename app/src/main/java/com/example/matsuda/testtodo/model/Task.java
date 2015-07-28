@@ -10,7 +10,10 @@ import com.example.matsuda.testtodo.App;
 import com.example.matsuda.testtodo.R;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 
 /**
@@ -65,7 +68,7 @@ public class Task implements Serializable, BaseColumns {
     public long id;
     public String name;
     public String memo;
-    public String date;
+    public long date = System.currentTimeMillis();
     public Priority priority = Priority.Normal;
 
 
@@ -85,12 +88,17 @@ public class Task implements Serializable, BaseColumns {
         this.memo = memo;
     }
 
-    public String getDate() {
+    public long getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(long date) {
         this.date = date;
+    }
+
+    static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+    public String getDateString() {
+        return dateFormat.format(new Date(this.getDate()));
     }
 
     public Priority getPriority() {
@@ -158,7 +166,8 @@ public class Task implements Serializable, BaseColumns {
                 Task task = new Task();
                 task.name = c.getString(c.getColumnIndex(COLUMN_NAME_NAME));
                 task.memo = c.getString(c.getColumnIndex(COLUMN_NAME_MEMO));
-                task.date = c.getString(c.getColumnIndex(COLUMN_NAME_DATE));
+                task.date = c.getLong(c.getColumnIndex(COLUMN_NAME_DATE));
+
                 int p = c.getInt(c.getColumnIndex(COLUMN_NAME_PRIORITY));
                 Priority priority = Priority.getEnum(p);
                 task.priority = priority;
@@ -218,7 +227,7 @@ public class Task implements Serializable, BaseColumns {
     public static Task mock(int i) {
         Task task = new Task();
         task.name = "task" + i;
-        task.date = "2015/01/23 18:25";
+        task.date = mockDate(i);
         // int p = (int)Math.random() * 3;
         Random r = new Random();
         int p = r.nextInt(3);
@@ -242,5 +251,15 @@ public class Task implements Serializable, BaseColumns {
         }
         task.memo = sb.toString();
         return task;
+    }
+    private static long mockDate(int i) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(System.currentTimeMillis());
+        Random r = new Random();
+        int p = r.nextInt(20) + 1;
+        cal.set(Calendar.DAY_OF_MONTH, p);
+        cal.set(Calendar.MONTH, (i + 1 <= 12 ? i + 1 : 8));
+        cal.set(Calendar.HOUR, (p + 2 <= 24 ? p + 2 : 13));
+        return cal.getTimeInMillis();
     }
 }

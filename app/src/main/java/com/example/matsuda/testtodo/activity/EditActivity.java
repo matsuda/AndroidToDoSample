@@ -19,6 +19,8 @@ import com.example.matsuda.testtodo.R;
 import com.example.matsuda.testtodo.adapter.TaskEditAdapter;
 import com.example.matsuda.testtodo.model.Task;
 
+import java.util.Calendar;
+
 public class EditActivity extends AppCompatActivity implements TaskEditAdapter.ViewSelectionListener,
         DateTimePickerFragment.DateTimeChangeDelegate
 {
@@ -119,6 +121,10 @@ public class EditActivity extends AppCompatActivity implements TaskEditAdapter.V
     @Override
     public void onDateTimePickerDateTimeChanged(int year, int monthOfYear, int dayOfMonth) {
         Log.d(TAG, "onDateTimePickerDateTimeChanged");
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, monthOfYear, dayOfMonth);
+        this.task.date = cal.getTimeInMillis();
+        this.adapter.notifyDataSetChanged();
     }
 
     @Override

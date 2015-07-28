@@ -16,7 +16,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
                     Task._ID + " INTEGER PRIMARY KEY, " +
                     Task.COLUMN_NAME_NAME + " TEXT NOT NULL, " +
                     Task.COLUMN_NAME_MEMO + " TEXT, " +
-                    Task.COLUMN_NAME_DATE + " TEXT, " +
+                    Task.COLUMN_NAME_DATE + " INTEGER, " +
                     Task.COLUMN_NAME_PRIORITY + " INTEGER NOT NULL);";
 
     private static final String TASK_TABLE_DELETE =
