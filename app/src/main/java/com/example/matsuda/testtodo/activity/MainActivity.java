@@ -3,14 +3,17 @@ package com.example.matsuda.testtodo.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.matsuda.testtodo.App;
 import com.example.matsuda.testtodo.R;
 import com.example.matsuda.testtodo.adapter.TaskListAdapter;
+import com.example.matsuda.testtodo.model.Observer;
 import com.example.matsuda.testtodo.model.Task;
 
 import java.util.ArrayList;
@@ -20,7 +23,37 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private ArrayList<Task> tasks = new ArrayList<Task>();
-    private TaskListAdapter adapter;
+    private ListView listView;
+
+    private Observer observer = new Observer() {
+        @Override
+        public void update(Object object) {
+            if (object instanceof Task) {
+                MainActivity.this.updateTask((Task)object);
+            }
+        }
+    };
+
+    private void updateTask(Task task) {
+        int position = -1;
+        for (int i = 0, c = this.tasks.size(); i < c; i++) {
+            Task t = this.tasks.get(i);
+            if (t.id == task.id) {
+                position = i;
+                break;
+            }
+        }
+        Log.d(TAG, "position : " + position);
+        if (position < 0) { return; }
+
+        Task newTask = Task.findById(this, task.id);
+        if (newTask == null) { return; }
+        Log.d(TAG, "find task");
+
+        this.tasks.set(position, newTask);
+        View view = listView.getChildAt(position);
+        listView.getAdapter().getView(position, view, listView);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +64,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         // this.tasks = Task.mockTasks(20);
         this.tasks = Task.findAll(this, "20");
 
-        adapter = new TaskListAdapter(this, 0, tasks);
+        TaskListAdapter adapter = new TaskListAdapter(this, 0, tasks);
 
-        ListView listView = (ListView)findViewById(R.id.list);
+        listView = (ListView)findViewById(R.id.list);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
+        App.addObserver(observer);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
+        App.removeObserver(observer);
     }
 
     @Override
@@ -89,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     Task task = (Task)data.getSerializableExtra("task");
                     if (task != null) {
                         this.tasks.add(task);
-                        this.adapter.notifyDataSetChanged();
+                        ((TaskListAdapter)this.listView.getAdapter()).notifyDataSetChanged();
 //                        Task nTask = Task.findById(this, task.id);
 //                        if (nTask != null) {
 //                            this.tasks.add(nTask);

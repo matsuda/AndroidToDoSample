@@ -204,6 +204,7 @@ public class Task implements Serializable, BaseColumns {
         String[] whereArgs = { String.valueOf(this.id) };
         int count = db.update(TABLE_NAME, values, where, whereArgs);
         db.close();
+        App.notifyObservers(this);
         return count > 0;
     }
 
